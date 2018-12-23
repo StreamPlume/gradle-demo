@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+}
+
+group 'com.stream'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// 把任务部署到本地仓库(目前版本使用不了)
+//uploadArchives {
+//    repositories.mavenDeployer {
+//        repository(url: 'file:./lib')
+//    }
+//}
+
+class HelloWorldTask extends DefaultTask{
+    @Optional
+    String message = 'I am Stream'
+
+    @TaskAction
+    def hello(){
+        println "hello world,$message"
+    }
+}
+
+task hello(type:HelloWorldTask)
+
+
+task hello2(type:HelloWorldTask){
+    message = "I am a legend."
+}
+
+//无法使用
+//task helloGroovy(type:HelloWorldTask2)
+
+

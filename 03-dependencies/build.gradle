@@ -1,0 +1,65 @@
+plugins {
+    id 'java'
+}
+
+group 'com.stream'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/"}
+    mavenCentral()
+    jcenter()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+    maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }  //转换pdf使用
+}
+
+// Gradle将对依赖进行分组，比如编译Java时使用的是这组依赖，运行Java时又可以使用另一组依赖。每一组依赖称为一个Configuration，在声明依赖时，我们实际上是在设置不同的Configuration
+// 依赖称为Configuration并不是一个好的名字，更好的应该叫作诸如“DependencyGroup”之类的
+// 定义一个Configuration
+configurations {
+    // 存在依赖冲突，在默认情况下，Gradle会选择最新版本
+    // resolutionStrategy来重新设置依赖冲突的处理规则
+    // resolutionStrategy
+    myDependency
+}
+
+// 通过dependencies()方法向myDependency中加入实际的依赖
+dependencies {
+
+//    compile
+//    testCompile
+//    runtime
+//    testRuntime
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    myDependency 'org.apache.commons:commons-lang3:3.0'
+
+    //对其他Project或者文件系统的依赖
+    // compile project(':ProjectB')
+    //对其他文件系统的依赖
+    // compile files('spring-core.jar', 'spring-aap.jar')
+    // compile fileTree(dir: 'deps', include: '*.jar')
+}
+
+task showMyDependency {
+    doLast{
+        println configurations.myDependency.asPath
+    }
+    doLast{
+        println "helloWorld << doLast start:"
+        println "project             Property:" + project
+        println "project.name        Property:" + project.name
+        println "project.path        Property:" + project.path
+        println "project.description Property:" + project.description
+        println "project.buildDir    Property:" + project.buildDir
+        println "project.version     Property:" + project.version
+        println "helloWorld << doLast end."
+    }
+}
+
+
+

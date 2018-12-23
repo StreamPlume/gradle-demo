@@ -1,0 +1,62 @@
+
+    plugins {
+        id 'java'
+    }
+
+    sourceCompatibility = 1.8
+
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+
+// allprojects()方法将配置一次性地应用于所有的Project，当然也包括定义Task
+allprojects {
+
+
+    group 'com.stream'
+    version '1.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+
+    task allTask{
+        doLast{
+            println project.name
+        }
+    }
+}
+
+//    subprojects()方法用于配置所有的子Project（不包含根Project）
+subprojects {
+    task subTask {
+        doLast{
+            println project.name
+        }
+    }
+}
+// 在Gradle脚本中，我们实际上是在操作一些领域对象，可以将groovy的所有语言特性用在Gradle的领域对象上，
+// 可以对Project进行过滤
+configure(allprojects.findAll {it.name.startsWith('sub')}) {
+    subTask {
+        doLast{
+            println "configure filter :"
+            println project.name
+        }
+    }
+}
+
+// 对单个Project进行单独配置
+project(':sub-project'){
+    task forSubProject{
+        doLast{
+            println "forSubProject"
+        }
+    }
+}
+
+    task testFromRootDepends{
+        doLast{
+            println "test Depends.root project."
+        }
+    }

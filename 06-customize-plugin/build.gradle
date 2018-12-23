@@ -1,0 +1,60 @@
+//plugins {
+//    id 'java'
+//}
+//
+//group 'com.strtimeFormateam'
+//version '1.0-SNAPSHOT'
+//
+//sourceCompatibility = 1.8
+//
+//repositories {
+//    mavenCentral()
+//}
+//
+//dependencies {
+//    compile gradleApi()
+//    groovy localGroovy()
+//    testCompile group: 'junit', name: 'junit', version: '4.12'
+//}
+//
+//
+//uploadArchives {
+//    repositories.mavenDeployer {
+//        repository(url: 'file:../lib')
+//    }
+//}
+
+apply plugin: DateAndTimePlugin
+
+dateAndTime {
+    timeFormat = 'HH:mm:ss.SSS'
+    dateFormat = 'MM/dd/yyyy'
+}
+
+class DateAndTimePlugin implements Plugin<Project> {
+
+    void apply(Project project){
+
+        project.extensions.create("dateAndTime", DateAndTimePluginExtension)
+
+        project.task('showTime'){
+            doLast {
+                println "Current time is " + new Date().format(project.dateAndTime.timeFormat)
+            }
+        }
+
+        project.tasks.create('showDate') {
+            doLast {
+                println "Current Date is " + new Date().format(project.dateAndTime.dateFormat)
+            }
+        }
+    }
+}
+
+class DateAndTimePluginExtension {
+    String timeFormat = "MM/dd/yyyy HH:mm:ss.SSS"
+    String dateFormat = "yyyy-MM-dd"
+}
+
+
+

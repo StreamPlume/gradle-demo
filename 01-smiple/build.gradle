@@ -1,0 +1,194 @@
+
+
+plugins {
+    id 'java'
+}
+
+group 'com.stream'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+
+
+repositories {
+    mavenLocal()
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public/"}
+    mavenCentral()
+    jcenter()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+    maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }  //转换pdf使用
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+
+//buildscript {
+//    repositories {
+//        mavenLocal()
+//        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+//        maven{ url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'}
+//        mavenCentral()
+//        jcenter()
+//        maven { url "https://repo.spring.io/snapshot" }
+//        maven { url "https://repo.spring.io/milestone" }
+//        maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }  //转换pdf使用
+//    }
+//    dependencies {
+//        testCompile group: 'junit', name: 'junit', version: '4.12'
+//    }
+//}
+//
+//allprojects {
+//    repositories {
+//        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+//        maven{ url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'}
+//    }
+//}
+
+task helloWorld{
+    // 这段代码是在配置阶段执行的
+    println "start : Hello World!!!"
+
+
+
+    // 这段代码是在执行阶段执行
+    doLast{
+        println "helloWorld << doLast start:"
+        println "project             Property:" + project
+        println "project.name        Property:" + project.name
+        println "project.path        Property:" + project.path
+        println "project.description Property:" + project.description
+        println "project.buildDir    Property:" + project.buildDir
+        println "project.version     Property:" + project.version
+        println "helloWorld << doLast end."
+    }
+
+    // 向Task的最前面加入执行过程
+    doFirst{
+        println "doFirst.I'm this first."
+    }
+}
+
+task copyFile(type: Copy){
+    from 'xml'
+    into 'destination'
+
+}
+
+
+
+task showTasks {
+    println tasks.class
+    println tasks.size()
+}
+
+tasks.create(name:'createTask') {
+    println "I create my task..."
+}
+
+task taskDepends(dependsOn:helloWorld){
+    println "test dependsON"
+}
+
+task taskDepends2 {
+    println "test depends 2"
+}
+taskDepends2.dependsOn helloWorld
+
+
+task setProperty {
+    description = "start: test set Property"
+    println description
+}
+
+//// gradle 5 好像不支持这个语法
+//setProperty2 {
+//    description2 = "test setProperty2"
+//}
+//
+//task setProperty2 {
+//    println description2
+////    doLast {
+////        println description2
+////    }
+//}
+
+//testConfigure.configure{
+//    configureDesc='test configure'
+//}
+//
+//task testConfigure {
+//    println configureDesc
+//}
+
+task combineFileContentNonIncremental {
+//    def sources = fileTree('sourceDir')
+    def sources = fileTree('xml')
+    println sources
+
+    def destination = file('destination.txt')
+
+    doLast {
+        destination.withPrintWriter { writer ->
+            sources.each {source ->
+                writer.println source.text
+            }
+        }
+    }
+}
+
+task combineTest{
+    def sources = fileTree('xml')
+    def destination = file('destinationTest.txt')
+
+    inputs.dir sources
+    outputs.file destination
+
+    doLast {
+        destination.withPrintWriter { writer ->
+            sources.each { source ->
+                writer.println source.text
+            }
+        }
+    }
+}
+
+version = 'this is the project version'
+description = 'this is the project description'
+
+task showProjectProperties {
+    println version
+    println project.description
+    // Project和Task都拥有description属性，而定义Task的闭包将delegate设置成了当前的Task，故如果直接使用description，此时打印的是showProjectProperties的description，而不是Project的，所以我们需要显式地指明project
+    println description
+}
+
+ext.customerProperty = "this is customer Property"
+
+ext {
+    customerProperty2 = "this is customer Property2."
+}
+
+task showCustomerProperty{
+    println customerProperty
+    println customerProperty2
+}
+
+// Gradle通过-P命令行参数来设置Property
+// gradle -PcommandLineProperty="this is gradle commandline Propery" showCommandLineProperty
+// 通过JVM系统参数设置Property　
+// gradle -Dorg.gradle.project.commandLineProperty="this is JVM commandline Propery" showCommandLineProperty
+// 通过环境变量设置Property
+// export ORG_GRADLE_PROJECT_commandLineProperty="this is System property"
+// window 不要双引号
+// set ORG_GRADLE_PROJECT_commandLineProperty=this is System property
+// gradle showCommandLineProperty
+
+//task showCommandLineProperty{
+//    println commandLineProperty
+//}
+

@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+}
+
+group 'com.stream'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task testSubDepends{
+    doLast{
+        println "test subproject Depends"
+    }
+
+}
+
+testSubDepends.dependsOn ':sub-project2:testFromSubDepends'
+
+task testRootDepends{
+    doLast{
+        println "test rootproject depends"
+    }
+}
+
+testRootDepends.dependsOn allTask
+
+// 目前发现，只能依赖父项目 allprojects 中的 task
+// testRootDepends.dependsOn testFromRootDepends
